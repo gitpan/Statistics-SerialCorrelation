@@ -3,7 +3,7 @@ package Statistics::SerialCorrelation;
 use base 'Exporter';
 @EXPORT_OK = qw(serialcorrelation);
 
-$VERSION = '1.0';
+$VERSION = '1.1';
 
 use strict;
 use warnings;
@@ -60,6 +60,7 @@ See your copy of Knuth for the formula.
 
 sub serialcorrelation {
     my @U = @_;
+
     @U = @{$U[0]} if(ref($U[0]) =~ /^ARRAY/);
     my $n = $#U + 1;
 
@@ -73,14 +74,23 @@ sub serialcorrelation {
         $sum_of_squares += $U[$_] * $U[$_];
         $sum += $U[$_]
     }
+
+    return undef if($n * $sum_of_squares == $sum * $sum);
     (($n * $sum_of_products_of_pairs) - ($sum * $sum)) /
         (($n * $sum_of_squares) - ($sum * $sum));
 }
 
 =head1 BUGS
 
-No bugs are known, but if you find any please let me know, and send a test
-case.
+To avoid divide-by-zero errors, we return undef if the square of the sum of
+your values is equal to the number of values multiplied by the sum of the
+squares of the values.  undef was chosen because it will never otherwise be
+returned and so you can easily detected.
+
+The results are not particularly meaningful for small data sets.
+
+No other bugs are known, but if you find any please let me know, and send a
+test case.
 
 =head1 FEEDBACK
 
